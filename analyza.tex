@@ -1,0 +1,688 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% I, the copyright holder of this work, release this work into the
+%% public domain. This applies worldwide. In some countries this may
+%% not be legally possible; if so: I grant anyone the right to use
+%% this work for any purpose, without any conditions, unless such
+%% conditions are required by law.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{beamer}
+\usetheme[faculty=sci]{fibeamer}
+\usepackage[utf8]{inputenc}
+\usepackage[
+  main=czech, %% By using `czech` or `slovak` as the main locale
+                %% instead of `english`, you can typeset the
+                %% presentation in either Czech or Slovak,
+                %% respectively.
+  english, slovak %% The additional keys allow foreign texts to be
+]{babel}        %% typeset as follows:
+%%
+%%   \begin{otherlanguage}{czech}   ... \end{otherlanguage}
+%%   \begin{otherlanguage}{slovak}  ... \end{otherlanguage}
+%%
+%% These macros specify information about the presentation
+\title{Diferenciální a integrální počet} %% that will be typeset on the
+\subtitle{Analýza II} %% title page.
+\author{Dalibor Kramář}
+%% These additional packages are used within the document:
+\usepackage{ragged2e}  % `\justifying` text
+\usepackage{booktabs}  % Tables
+\usepackage{tabularx}
+\usepackage{tikz}      % Diagrams
+\usetikzlibrary{calc, shapes, backgrounds}
+\usepackage{amsmath, amssymb}
+\usepackage{url}       % `\url`s
+\usepackage{listings}  % Code listings
+\usepackage{nameref}
+
+\usepackage[backend=bibtex, sorting=none, style=numeric]{biblatex}
+
+\newtheorem{thm}{Věta}
+
+\theoremstyle{definition}
+\newtheorem{dfn}{Definice}
+
+\theoremstyle{example}
+\newtheorem{ex}{Příklad}
+
+\def\N{\mathbb{N}}
+\def\Z{\mathbb{Z}}
+\def\Q{\mathbb{Q}}
+\def\R{\mathbb{R}}
+\def\C{\mathbb{C}}
+\def\E{\mathbb{E}}
+\def\P{\mathbb{P}}
+\def\d{\mathrm{d}}
+
+\bibliography{analyza}
+
+\frenchspacing
+\begin{document}
+  \shorthandoff{-}
+  \frame[c]{\maketitle}
+
+  \AtBeginSection[]{% Print an outline at the beginning of sections
+    \begin{frame}<beamer>
+      \frametitle{Obsah}
+      \tableofcontents[currentsection]
+    \end{frame}}
+
+\section{Integrální počet}
+\subsection{Newtonův integrál}
+\begin{frame}{Primitivní funkce}
+	\begin{dfn}
+		Funkce $F(x)$ se nazývá primitivní k funkci $f$ právě, když $F'(x) = f(x)$.
+	\end{dfn}
+	\begin{dfn}
+		Newtonův neurčitý integrál je množina všech primitivních funkcí k $f$.
+	\end{dfn}
+	Na následujících slidech ukážeme, že všechny primitivní funkce se liší pouze o konstantu.
+\end{frame}
+
+\begin{frame}{Rolleova věta}
+	\begin{thm}
+		Nechť je funkce $f$ spojitá na intervalu $[a, b]$, její derivace je definována na intervalu $(a, b)$ a $f(a) = f(b)$. Pak existuje $\varepsilon\in (a, b): f'(\varepsilon) = 0$.
+	\end{thm}
+	\begin{proof}
+		Pokud funkce je konstantní, pak stačí zvolit $\varepsilon = \frac{a + b}{2}$. Předpokládejme, že existuje $x$ takové, že $f(x) \neq f(a)$. BÚNO vyřešíme případ, kdy $f(x) > f(a)$. Potom (podle Weierstrassovy věty) má funkce na intervalu $[a, b]$ maximum $m$ ($a \neq m \neq b$). Derivace v maximu musí být nulová, jinak by funkce na okolí bodu $m$ byla rostoucí, nebo klesající.~\cite{zaklady1}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Lagrangeova věta}
+	\begin{thm}
+		Nechť je funkce $f$ spojitá na intervalu $[a, b]$ a její derivace je definována na intervalu $(a, b)$. Pak existuje $\varepsilon\in (a, b): f'(\varepsilon) = \frac{f(b) - f(a)}{b - a}$.
+	\end{thm}
+	\pause
+	\begin{proof}\renewcommand{\qedsymbol}{}
+		Uvažme funkci $g(x) = f(x) - \frac{f(b) - f(a)}{b - a}(x - a)$. 
+		\begin{align*}
+			g(b) &= f(b) - \frac{f(b) - f(a)}{b - a}(b - a) = f(b) - f(b) + f(a) = f(a)\\
+			g(a) &= f(a) - \frac{f(b) - f(a)}{b - a}(a - a) = f(a) - \frac{f(b) - f(a)}{b - a}0 = f(a)
+		\end{align*}
+	\end{proof}
+\end{frame}
+\begin{frame}{Lagrangeova věta}
+	\begin{thm}
+		Nechť je funkce $f$ spojitá na intervalu $[a, b]$ a její derivace je definována na intervalu $(a, b)$. Pak existuje $\varepsilon\in (a, b): f'(\varepsilon) = \frac{f(b) - f(a)}{b - a}$.
+	\end{thm}
+	\begin{proof}
+		Uvažme funkci $g(x) = f(x) - \frac{f(b) - f(a)}{b - a}(x - a)$.
+
+		Jelikož $g(b) = g(a)$, podle Rolleovy věty existuje $\varepsilon$ takové, že $g'(\varepsilon) = f'(\varepsilon) - \frac{f(b) - f(a)}{b - a} = 0$, tedy $f'(\varepsilon) = \frac{f(b) - f(a)}{b - a}$.
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Nulovou derivaci má pouze konstantní funkce}
+	\begin{thm}
+		Nechť je funkce $f$ má nulovou derivaci. Pak funkce je konstantní.
+	\end{thm}
+	\pause
+	\begin{proof}
+		Chceme ukázat $f(x) = f(y)$ neboli $f(x) - f(y) = 0$, přičemž BÚNO $x < y$. Podle Lagrangeovy věty existuje $\varepsilon$ takové že:
+		\begin{align*}
+			f(x) - f(y) &= f'(e)(x - y) = 0
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Primitivní funkce k téže funkci se liší pouze o konstantu}
+	\begin{thm}
+		Nechť je funkce $f$ a $g$ májí stejnou derivaci. Pak $f(x) = g(x) + c$.
+	\end{thm}
+	\begin{proof}
+		Funkce $h(x) = f(x) - g(x)$ má nulovou derivaci. Podle předchozí věty $h(x) = f(x) - g(x) = c$, neboli $f(x) = g(x) + c$.
+	\end{proof}
+\end{frame}
+
+\subsection{Riemanův integrál}
+\begin{frame}{Dělení intervalu}
+	\begin{dfn}
+		\begin{itemize}
+			\item Dělení intervalu $[a, b]$ je posloupnost čísel, taková, že $a = x_0 < x_1 < \dots x_{n - 1} < \dots x_n$.
+			\item Dolní součet pro funkci $f$ a dělění intervalu $[a, b]$ je $\sum\limits_{i = 1}^n (x_i - x_{i - 1})\cdot \inf \{f(x) | x \in [x_i, x_{i - 1}]\}$
+			\item Dolní Riemannův integrál funkce na intervalu $[a, b]$ je supremum všech dolních součtů pro funkci $f$.
+		\end{itemize}
+	\end{dfn}
+\end{frame}
+
+\begin{frame}{Dělení intervalu}
+	\begin{dfn}
+		\begin{itemize}
+			\item Dělení intervalu $[a, b]$ je posloupnost čísel, taková, že $a = x_0 < x_1 < \dots x_{n - 1} < \dots x_n$.
+			\item Horní součet pro funkci $f$ a dělění intervalu $[a, b]$ je $\sum\limits_{i = 1}^n (x_i - x_{i - 1})\cdot \sup \{f(x) | x \in [x_i, x_{i - 1}]\}$
+			\item Horní Riemannův integrál funkce na intervalu $[a, b]$ je infimum všech horních součtů pro funkci $f$.
+		\end{itemize}
+	\end{dfn}
+\end{frame}
+
+\begin{frame}{Riemannův integrál}
+	\begin{dfn}
+		\begin{itemize}
+			\item Jestliže horní a dolní integrál Riemannův jsou stejná reálná čísla, pak se tato hodnota nazyvá Riemannův určitý integrál a zapisuje se $\int_a^b f(x) \d x$.
+			\item $\int\limits_a^b f(x) \d x = - \int\limits_b^a f(x) \d x$
+			\item $\int\limits_a^a f(x) \d x = 0$.
+			\item Funkce horní meze integrálu je funkce $H$, kterou lze definovat předpisem. $H(y) = \int\limits_c^y f(x) \d x$ pro nějaké $c \in \R$.
+		\end{itemize}
+	\end{dfn}
+\end{frame}
+
+\begin{frame}{Věta o střední hodnotě integrálního počtu}
+	\begin{thm}
+		Nechť je definovaný integrál funkce $f$ na intervalu $I = [a, b]$. Pak existuje $\mu \in [\inf f(I), \sup f(I)]$, takové, že platí $\mu = \frac{\int\limits_a^b f(x) \d x}{b - a}$.
+	\end{thm}
+	\begin{proof}
+		Tvrzení platí díky nerovnostem:
+		\begin{align*}
+			\inf f(I) \cdot (b - a) &\leq \int\limits_a^b f(x) \d x \leq \sup f(I) \cdot (b - a)
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\subsection{Newtonova-Leibnizova věta}
+\begin{frame}{Funkce horní meze je primitivní funkcí}
+	\begin{thm}
+		Je-li funkce $f$ spojitá v bodě $x_0$, pak $H'(x_k) = f(x_k)$.
+	\end{thm}
+	\begin{proof}\renewcommand{\qedsymbol}{}
+		Podle věty o střední hodnotě platí pro kladné $h$ $\int\limits_{x_k}^{x_k + h} f(x) dx = \mu h$. Pro~záporné $h$ rovnost dostaneme:
+		\begin{eqnarray*}
+			\int\limits_{x_k}^{x_k + h} f(x) dx = -\int\limits_{x_k + h}^{x_k} f(x) dx = -(\mu  \cdot (-h)) = \mu h
+		\end{eqnarray*}
+		Přičemž $\mu \in [\inf f([x_k, x_k + h]), \sup f([x_k, x_k + h])$.
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Funkce horní meze je primitivní funkcí}
+	\begin{thm}
+		Je-li funkce $f$ spojitá v bodě $x_0$, pak $H'(x_k) = f(x_k)$.
+	\end{thm}
+	\begin{proof}\renewcommand{\qedsymbol}{}
+		Spočtěme derivaci funkce $H$ v bodě $x_k$. Jelikož hodnota $\mu$ závisí na $h$, je třeba brát $\mu$ jako funkci proměnné $h$.
+		\begin{align*}
+			\lim_{h \rightarrow 0}\frac{H(x_k + h) - H(x_k)}{h} = \lim_{h \rightarrow 0}\frac{\int\limits_{x_k}^{x_k + h} f(x) dx}{h} = \lim_{h \rightarrow 0}\frac{\mu(h) h}{h} = \lim_{h \rightarrow 0}\mu(h)
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Funkce horní meze je primitivní funkcí}
+	\begin{thm}
+		Je-li funkce $f$ spojitá v bodě $x_0$, pak $H'(x_k) = f(x_k)$.
+	\end{thm}
+	\begin{proof}
+		Jelikož funkce $f$ je spojitá v bodě $x_0$, tak z definice
+		\begin{align*}
+			\forall \epsilon \exists \delta \forall x \in (x_k - \delta, x_k + \delta) |x - x_k| < \epsilon
+		\end{align*}
+		Tedy supremum i infimum intervalu jsou $f(x_k)$ pro $h \rightarrow 0$. Podle věty o limitě sevřené funkce je $\lim\limits_{h \rightarrow 0} \mu(h) = f(x_k)$.~\cite{zaklady2}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Newtonova-Leibnizova věta}
+	\begin{thm}
+		Nechť $F$ je primitivní funkce k funkci $f$. Pak platí $\int\limits_a^b f(x) \d x = F(b) - F(a)$. 
+	\end{thm}
+	\begin{proof}
+		Funkce $H$ je primitivní funkce k $f$, proto $H(x) = F(x) + C$.
+		\begin{align*}
+			&F(b) - F(a) = H(b) - C - H(a) + C = H(b) - H(a) =\\
+			&\int_c^b f(x) \d x - \int_c^a f(x) \d x = \int_c^b f(x) \d x + \int_a^c f(x) \d x = \int_a^b f(x) \d x
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\section{Diferenciální rovnice}
+\subsection{Separace proměnných}
+\begin{frame}{Separace proměnných}
+	\begin{align*}
+		f'(x) &= f(x)^2 \sin x\\
+		f^{-2}(x) \cdot f'(x) &= \sin x\\
+		\int f^{-2}(x) \cdot f'(x) \d x &= \int \sin x \d x\\
+		\int t^{-2} \d t &= \int \sin x \d x\\
+		-\frac{1}{t} &= -\cos x + C\\
+		f(x) &= \frac{1}{\cos x - C}\\ 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Separace proměnných}
+	\begin{align*}
+		y' &= y^2 \sin x\\
+		y^{-2}\cdot y' &= \sin x\\
+		\int y^{-2} \cdot y' \d x &= \int \sin x \d x\\
+		-\frac{1}{y} &= -\cos x + C\\
+		y &= \frac{1}{\cos x + C}\\ 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Separace proměnných}
+	\begin{align*}
+		y' &= y^2 \sin x\\
+		\frac{\d y}{\d x} &= y^2 \sin x\\
+		y^{-2}\cdot \d y &= \sin x \d x\\
+		\int y^{-2} \cdot y \d y &= \int \sin x \d x\\
+		-\frac{1}{y} &= -\cos x + C\\
+		y &= \frac{1}{\cos x + C}\\ 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Někde jsme ale udělali chybu!}
+	\begin{align*}
+		y' &= y^2 \sin x\\
+		y^{-2}\cdot y' &= \sin x\\
+		\int y^{-2} \cdot y' \d x &= \int \sin x \d x\\
+		-\frac{1}{y} &= -\cos x + C\\
+		y &= \frac{1}{\cos x + C}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Někde jsme ale udělali chybu!}
+	\begin{alertblock}{Pozor}
+		Protože ne všechny úpravy jsou ekvivalentní, musíme kontrolovat podmínky.
+	\end{alertblock}
+	\begin{align*}
+		y^{-2}\cdot y' &= \sin x\\
+		\int y^{-2} \cdot y' \d x &= \int \sin x \d x \, (y \neq 0)
+	\end{align*}
+	Dostáváme tedy další řešení $y = 0$.
+
+	Dokonce pro každý interval $(-\frac{\pi}{2} + k\pi, \frac{\pi}{2} + k\pi), k \in \Z$ se můžeme rozhodnout, jestli bude funkce nulová, nebo ne.
+\end{frame}
+
+\begin{frame}{Zachraňme to!}
+	Častokrát je třeba rovnici vyřešit jen pro nějaký interval a není potřeba řešit jak se chová funkce jinde. Pak se požaduje, aby na tomto intervalu měla funkce derivaci. 
+	\begin{block}{Pro zájemce}
+		Ukažme, že funkce je nenulová pro sjednocení intervalů: Protože $y$ je řešením diferenciální rovnice, má $y$ derivaci, a tedy $y$ je spojitá. Jelikož $y$ je spojitá, pak vzorem otevřené množiny je otevřená množina (Otevřená množina je sjednocení intervalů.) a $\R \setminus \{0\}$ je otevřená množina.
+	\end{block}
+
+\end{frame}
+
+\begin{frame}{Separace proměnných}
+	\begin{align*}
+		\tan x y' &= y\\
+		\frac{1}{y}\cdot y' &= \cot x \, (y \neq 0)\\
+		\int \frac{1}{y}\cdot y' \d x &= \int \frac{\cos x}{\sin x} \d x\\
+		\log |y| &= \int \frac{1}{t} \d t = \log |t| = \log |\sin x| + C\\
+		|y| &= e^{\log |\sin x| + C} = e^{\log |\sin x|} \cdot e^C = |\sin x| \cdot e^C\\
+		y &= \pm e^C \sin x 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Separace proměnných}
+	Výraz $e^C$ může nabývat libovolné kladné kodnoty, výraz $-e^C$ libovolné záporné hodnoty a $y = 0 = 0 \cdot \sin x$. Řešení jsou tedy tvaru $y = K\sin x$, kde $K \in \R$.
+\end{frame}
+
+\begin{frame}{Substituce}
+	\begin{align*}
+		y' &= 1 + \frac{y}{x}\\
+		u(x) &= \frac{y(x)}{x}\\
+		u\cdot x &= y(x)\\
+		u + u'x &= y'\\
+		u + u'x &= 1 + u
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Substituce}
+	\begin{align*}
+		u + u'x &= 1 + u\\
+		u' &= \frac{1}{x}\\
+		\int u' \d x &= \frac{1}{x} \d x\\
+		u &= \log |x| + C\\
+		\frac{y}{x} &= \log |x| + C\\
+		y &= x \log |x| + Cx\, \text{\cite{hasil}}
+	\end{align*}
+\end{frame}
+
+\subsection{Lineární rovnice}
+\begin{frame}{Lineární rovnice}
+	\begin{dfn}
+	Rovnice je ve tvaru $y' = a(x)y + b(x)$. Jestliže $b(x) = 0$, nazýváme rovnici homogenní.
+	\end{dfn}
+	\begin{exampleblock}{Příklad homogenní a nehomogenní rovnice.}
+		Rovnice $y' = x^2y$ je homogenní, kdežto rovnice $y' = x^2y + 3x^2 + 4x$ homogenní není.
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{thm}
+		Všimněme si, že řešení homogenních rovnic tvoří vektovový prostor.
+	\end{thm}
+	\begin{proof}
+		Nechť $y' = a(x)y$ a $z' = a(x)z$:
+		\begin{align*}
+			(y + z)' &= y' + z' = a(x)y + a(x)z = a(x) \cdot (x + y)\\
+			(cy)' &= cy' = a(x)cy
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+
+\begin{frame}{Lineární rovnice}
+	\begin{thm}
+		Rozdíl dvou řešení je řešení homogenní rovnice.
+	\end{thm}
+	\begin{proof}
+		Nechť $y' = a(x)y + b(x)$ a $z' = a(x)z + b(x)$:
+		\begin{align*}
+			(y - z)' &= y' - z' = a(x)y + b(x) - a(x)z - b(x) = a(x) \cdot (y - z)
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{thm}
+		Součet řešení a řešení homogenní rovnice je opět řešení rovnice.
+	\end{thm}
+	\begin{proof}
+		Nechť $y' = a(x)y + b(x)$ a $z' = a(x)z$:
+		\begin{align*}
+			(y + z)' &= y' + z' = a(x)y + b(x) + a(x)z  = a(x) \cdot (y + z) + b(x)
+		\end{align*}
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{thm}
+		Nechť $f(x)$ je řešením rovnice $y' = a(x)y + b(x)$. Pak množina všech řešení rovnice je $\{f + g \mid g' = a(x)g\}$.
+	\end{thm}
+	\begin{proof}
+		Jelikož $f$ je řešením rovnice a $g$ je řešením homogenní rovnice, pak $f + g$ je řešením rovnice.
+
+		Ukážeme, že každé řešení rovnice je tvaru $f + g$ pro nějaké $g$. Buď $h$ libovolné řešení rovnice. Pak $h - f$ je řešením homogenní rovnice. Volbou $g = h - f$ dostáváme $f + g = f + h - f = h$.
+	\end{proof}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = x^2y + x^2$.
+	\end{exampleblock}
+	Nejdříve vyřešíme homogenní rovnici $y' = x^2y$.
+	\begin{align*}
+		y' &= x^2y\\
+		\int\frac{y'}{y} \d x &= \int x^2 \d x\\
+		\log |y| &= \frac{x^3}{3} + C\\
+		y &= K e^\frac{x^3}{3}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = x^2y + x^2$.
+	\end{exampleblock}
+	Nyní je třeba najít alespoň jedno řešení diferenciální rovnice. Všimněme si, že funkce $e^\frac{x^3}{3}$ téměř řeší rovnici nebýt členu $x^2$. Tuto vlastnost zkusíme opravit s využitím vlastnosti pro součin derivací. Hledejme konkrétní řešení rovnice ve tvaru $f(x)\cdot e^\frac{x^3}{3}$.
+	\begin{align*}
+		y &= f(x)\cdot e^\frac{x^3}{3}\\
+		y' &= f'(x)\cdot e^\frac{x^3}{3} + f(x)\cdot e^\frac{x^3}{3} \cdot x^2
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = x^2y + x^2$.
+	\end{exampleblock}
+	\begin{align*}
+		y' &= x^2y + x^2\\
+		f'(x)\cdot e^\frac{x^3}{3} + f(x)\cdot e^\frac{x^3}{3} \cdot x^2 &= f(x)\cdot e^\frac{x^3}{3} \cdot x^2 + x^2\\
+		f'(x)\cdot e^\frac{x^3}{3} &= x^2\\
+		f'(x) &=\frac{x^2}{e^\frac{x^3}{3}}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = x^2y + x^2$.
+	\end{exampleblock}
+	\begin{align*}
+		f(x) &=\int \frac{x^2}{e^\frac{x^3}{3}} \d x = \int \frac{1}{e^t} \d t = - \frac{1}{e^t} + C = -\frac{1}{e^{\frac{x^3}{3}}} + C\\
+		y &= f(x)\cdot e^\frac{x^3}{3}\\
+		y &=  e^\frac{x^3}{3} \cdot \left(-\frac{1}{e^{\frac{x^3}{3}}} + C\right) = -1 + Ce^{\frac{x^3}{3}}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = x^2y + x^2$.
+	\end{exampleblock}
+	Našli jsme jedno řešení tvaru $y = -1 + Ce^{\frac{x^3}{3}}$. Zbývá určit všechna řešení s využitím řešení homogenní rovnice:
+	\begin{align*}
+		y &= -1 + Ce^{\frac{x^3}{3}} + Ke^{\frac{x^3}{3}} =  -1 + (C + K)e^{\frac{x^3}{3}} = -1 + Ce^{\frac{x^3}{3}}
+	\end{align*}
+	Všimněme si, že konkrétní řešení $y = -1$ lze najít snadno. S použitím řešení homogenní rovnice dostaneme výsledek $y = -1 + Ce^{\frac{x^3}{3}}$.
+\end{frame}
+
+\begin{frame}{Obecné řešení lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = a(x)y + b(x)$.
+	\end{exampleblock}
+	Nejdříve vyřešíme homogenní rovnici $y' = a(x)y$.
+	\begin{align*}
+		y' &= a(x)y\\
+		\int\frac{y'}{y} \d x &= \int a(x) \d x\\
+		\log |y| &= A(x) + C\\
+		y &= K e^{A(x)}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = a(x)y + b(x)$.
+	\end{exampleblock}
+	\begin{align*}
+		y' &= a(x)y + b(x)^2\\
+		f'(x)\cdot e^{A(x)} + f(x)\cdot e^{A(x)} \cdot a(x) &= f(x)\cdot e^{A(x)} \cdot a(x) + b(x)\\
+		f'(x)\cdot e^{A(x)} &= b(x)\\
+		f'(x) &=\frac{b(x)}{e^{A(x)}}
+	\end{align*}
+\end{frame}
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = a(x)y + b(x)$.
+	\end{exampleblock}
+	\begin{align*}
+		f(x) &=\int\frac{b(x)}{e^{A(x)}} \d x\\
+		y &= f(x)\cdot e^{A(x)} = e^{A(x)} \cdot \int\frac{b(x)}{e^{A(x)}} \d x
+	\end{align*}
+	Při integrování nám vypadne konstanta a dostaneme člen $Ce^{A(x)}$. Řešení homogenní rovnice bylo $Ke^{A(x)}$. Nedostaneme žádné nové řešení. Proto $y = e^{A(x)} \cdot \int\frac{b(x)}{e^{A(x)}} \d x$ už je výsledek.
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = a(x)y + b(x)$.
+	\end{exampleblock}
+	Provedeme zkoušku:
+	\begin{align*}
+		y' = \left(e^{A(x)} \cdot \int\frac{b(x)}{e^{A(x)}} \d x\right)' &= e^{A(x)} \cdot a(x) \cdot \int\frac{b(x)}{e^{A(x)}} \d x + e^{A(x)} \frac{b(x)}{e^{A(x)}}\\
+		a(x)y + bx &=  e^{A(x)} \cdot a(x) \cdot \int \frac{b(x)}{e^{A(x)}} \d x + b(x)\\
+		L &= P
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = y + 4x^3 + 3x^2 + 1$.
+	\end{exampleblock}
+	\begin{align*}
+		a(x) &= 1\\
+		A(x) &= x + C\, \text{(zvolme $C = 0$)}\\
+		\int \frac{b(x)}{e^{A(x)}} \d x &= \int \frac{4x^3 + 3x^2 + 1}{e^x} \d x
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{flalign*}
+		&\int \frac{4x^3 + 3x^2 + 1}{e^x} \d x = \int e^{-x} \cdot (4x^3 + 3x^2 + 1) =\\&
+\begin{vmatrix}
+	u' = e^{-x} & v = 4x^3 + 3x + 1\\
+	u = -e^{x} & v' = 12x^2 + 6x
+\end{vmatrix}
+		 = -e^{-x} \cdot (4x^3 + 3x^2 + 1) -\\&
+		 \int -e^{-x} \cdot (12x^2 + 6x) \d x =
+\begin{vmatrix}
+	u' = -e^{-x} & v = 12x^2 + 6x\\
+	u = e^{x} & v' = 24x + 6
+\end{vmatrix}
+		=\\&
+	-e^{-x} \cdot (4x^3 + 3x^2 + 1) - e^{-x} \cdot (12x^2 + 6x) + \int e^{-x} \cdot (24x + 6) \d x =\\&
+\begin{vmatrix}
+	u' = e^{-x} & v = 24x + 6\\
+	u = -e^{x} & v' = 24
+\end{vmatrix} =
+	\end{flalign*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{flalign*}
+		&= -e^{-x} \cdot (4x^3 + 3x^2 + 1) - e^{-x} \cdot (12x^2 + 6x) - e^{-x} \cdot (24 x + 6) -\\&
+		\int -e^{-x} \cdot 24 \d x =
+		-e^{-x} \cdot (4x^3 + 3x^2 + 1) - e^{-x} \cdot (12x^2 + 6x) -\\&
+		e^{-x} \cdot (24x + 6) -24 e^{-x} + C = -e^{-x} \cdot (4x^3 + 15x^2 + 30x + 31) + C
+	\end{flalign*}
+\end{frame}
+
+\begin{frame}{Lineární rovnice}
+	\begin{exampleblock}{Příklad}
+		Řešte rovnici $y' = y + 4x^3 + 3x^2 + 1$.
+	\end{exampleblock}
+	\begin{align*}
+		y &= e^{A(x)} \cdot \int\frac{b(x)}{e^{A(x)}} \d x = e^x \cdot (-e^{-x} \cdot (4x^3 + 15x^2 + 30x + 31) + C)\\
+		y &= -4x^3 - 15x^2 - 30x - 31 + C \cdot e^x
+	\end{align*}
+\end{frame}
+
+\subsection{Diferenciální rovnice vyššího řádu}
+\begin{frame}{Diferenciální rovnice vyššího řádu}
+	Pro řešení diferenciálních rovnic vyššícho řádu očekáváme, že u $y$ se vyskytují pouze konstanty. U homogenních rovnic hledáme řešení ve tvaru $Ce^{\lambda x}$.
+	\begin{align*}
+		y'' - y' - 12y &=0\\
+		Ce^{\lambda x}\cdot \lambda^2 - Ce^{\lambda x}\cdot \lambda - 12 Ce^{\lambda x} &= 0\\
+		\lambda^2 - \lambda - 12 &= 0\\
+		(\lambda - 4) \cdot (\lambda + 3) &= 0\\
+		\lambda &\in \{-3, 4\}\\
+		y &= C_1e^{-3x} + C_2e^{4x}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Diferenciální rovnice vyššího řádu}
+	U nehomogenních diferenciálních rovnic vyššícho řádu nejdříve vyřešíme homogenní rovnici a poté provedeme tzv. variaci konstant.~\cite{isibalo}
+	\begin{align*}
+		y'' - 4y' - 4y &=-\frac{e^{2x}}{x + 1}\\
+		Ce^{\lambda x}\cdot \lambda^2 - 4Ce^{\lambda x}\cdot \lambda - 4Ce^{\lambda x} &= 0\\
+		\lambda^2 - 4\lambda + 4 &= 0\\
+		(\lambda - 2)^2 &= 0\\
+		\lambda &= 2\\
+		y &= C_1e^{2x} + C_2xe^{2x}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Diferenciální rovnice vyššího řádu}
+	U nehomogenních diferenciálních rovnic vyššícho řádu nejdříve vyřešíme homogenní rovnici a poté provedeme pomocí metody neurčitých koeficientů.~\cite{isibalo}
+	\begin{align*}
+		C_1'(x)e^{2x} + C_2'xe^{2x} &= 0\\
+		C_1'(x)e^{2x}\cdot 2 + C_2'(x)\cdot(e^{2x} + 2xe^{2x}) &= -\frac{e^{2x}}{x + 1}\\
+		C_1'(x) + C_2'x &= 0\\
+		-C_2'(x)e^{2x}\cdot 2x + C_2'(x)\cdot(e^{2x} + 2xe^{2x}) &= -\frac{e^{2x}}{x + 1}\\
+		C_2'(x)\cdot e^{2x} &= -\frac{e^{2x}}{x + 1}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Diferenciální rovnice vyššího řádu}
+	\begin{align*}
+		C_2'(x) &= -\frac{1}{x + 1}\\
+		C_1(x) &= \frac{x}{x + 1}\\
+		C_2(x) &= \int -\frac{1}{x + 1} \d x = -\log |x + 1| + C\\
+		C_1(x) &= \int 1 -\frac{1}{x + 1} \d x = x -\log |x + 1| + C\\
+		y &= C_1(x)e^{2x} + C_2(x)xe^{2x} + (x -\log |x + 1|)e^{2x} - \log |x + 1| xe^{2x}
+	\end{align*}
+\end{frame}
+
+\section{Difetenciální počet funkcí více proměnných}
+\subsection{Parciální derivace}
+\begin{frame}{Parciální derivace}
+	Funkce více proměnných se derivují tak, že se derivuje podle jedné proměnné a ostatní proměnné se považují za konstantu.
+	\begin{align*}
+		f(x, y) &= x^3 + 3xy + y^2\\
+		\frac{\partial f}{\partial x} &= 3x^2 + 3y\\
+		\frac{\partial f}{\partial y} &= 3x + 2y\\
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Parciální derivace}
+	Funkce více proměnných se derivují tak, že se derivuje podle jedné proměnné a ostatní proměnné se považují za konstantu.
+	\begin{align*}
+		f(x, y) &= xy\sin x \\
+		\frac{\partial f}{\partial x} &= y(\sin x + x \cos x)\\
+		\frac{\partial f}{\partial y} &= x \sin x\\
+	\end{align*}
+\end{frame}
+
+\subsection{Lokální extrémy}
+\begin{frame}{Lokální extrémy}
+	Jestliže bod funkce je lokální extrém, musí být obě parciální derivace nulové. Určíme nejdřív tedy stacionární body. Ukážeme si na přikladu funkce $f(x, y) = x^3 + y^3 - 3xy$.
+	\begin{align*}
+		\frac{\partial f}{\partial x} &= 3x^2 - 3y = 3(x^2 - y) = 0\\
+		\frac{\partial f}{\partial y} &= 3y^2 - 3x = 3(y^2 - x) = 0\\
+		&x^4 - x = 0  \Rightarrow x \in \{0, 1\}
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lokální extrémy}
+	Našli jsme stacionární body $[0, 0]$ a $[1, 1]$. Vidíme, že bod $[0, 0]$ není lokální extrém. Funkce $g(x) = f(x, 0) = x^3$ má v bodě 0 inflexní bod. Umíme takto snadno říct, že bod není lokální extrém. Ovšem určit že bod lokální extrém je je komplikovanější. Využijeme druhou derivaci.
+	\begin{thm}
+		Označme $D(x, y) = \frac{\partial^2f(x, y)}{(\partial x)^2} \cdot \frac{\partial^2f(x, y)}{(\partial y)^2 } - \frac{\partial^2 f(x, y)}{\partial x \partial y}$. Jestliže $D(x_0, y_0) > 0$, pak má funkce v bodě $[x_0, y_0]$ lokální extrém, jestliže $D(x, y) < 0$, pak funkce v bodě $[x_0, y_0]$ lokální extrém nemá.~{\normalfont \cite{hasil}}
+	\end{thm}
+\end{frame}
+
+\begin{frame}{Lokální extrémy}
+	\begin{alertblock}{Upozornění}
+		Pokud $D(x_0, y_0) = 0$, nelze touto metodou určit jestli stacionární bod je lokální extrém.
+	\end{alertblock}
+	Spočtěme druhé derivace:
+	\begin{align*}
+		\frac{\partial^2f(x, y)}{(\partial x)^2} = \frac{\partial 3(x^2 - y)}{\partial x} = 6x\\
+		\frac{\partial^2f(x, y)}{\partial x \partial y} = \frac{\partial 3(x^2 - y)}{\partial y} = -3\\
+		\frac{\partial^2f(x, y)}{(\partial y)^2} = \frac{\partial 3(y^2 - x)}{\partial y} = 6y
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Lokální extrémy}
+	\begin{align*}
+		D(x, y) &= 6x6y - (-3)^2 = 36xy - 9\\
+		D(0, 0) &= -9 < 0\Rightarrow \text{Není extrém}\\
+		D(1, 1) &= 27 > 0 \Rightarrow \text{Je extrém}
+	\end{align*}
+\end{frame}
+
+\subsection{Globální extrémy}
+\begin{frame}{Globální extrémy}
+	Cílem je určit extrémy na nějaké uzavřené množině. Uvažme množinu $M = \{(x, y) \in \R^2 \mid x + y \geq 0 \wedge x \leq 3 \wedge y < 3\}$ a funkci $f(x, y) = x^3 + y^3 - 3xy$ z minulého příkladu. Globálním extrémem bude buď lokální extrém, nebo bod na okraji. Má jeden lokální extrém: $f(1, 1) = -1$. (U globálních extrémů stačí ověřovat pouze stacionární body. Využili jsme ale toho, že víme, že bod $(0, 0)$ není extrém.)
+\end{frame}
+\begin{frame}{Globální extrémy}
+	Hranice množiny $M$ jsou následující: $g(x) = f(x, 3) = x^3 + 27 - 9x$, $h(y) = f(3, y) =  27 + y^3 - 9y$, $i(x) = f(x, -x) = x^3 - x^3 + 3x^2 = 3x^2$.
+	\begin{align*}
+		g'(x) &= 3x^2 - 9 = 0 \Rightarrow x = \pm \sqrt{3}\\
+		h'(y) &= 3y^2 - 9 = 0 \Rightarrow y = \pm \sqrt{3}\\
+		i'(x) &= 6x = 0 \Rightarrow x = 0 \Rightarrow y = -x = 0
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Globální extrémy}
+	Při určování globálních extrémů funkcí jedné proměnné taky bylo potřeba zkontrolovat body na okraji intervalu. Tyto body nám přidají několik kandidátů:
+	\begin{align*}
+		g(-3) = i(-3) = f(-3, 3) &= 18\\
+		g(3) = h(3) = f(3, 3) &= 45\\
+		i(3) = h(-3) = f(3, -3) &= 18\\
+		f(0, 0) &= 0\\
+		f(1, 1) &= -1
+	\end{align*}
+	Vidíme tedy, že globální minimum na množině $M$ se nachází v bodě $(1, 1)$ a globální maximum v bodě $(3, 3)$.
+\end{frame}
+
+\begin{frame}{Odkazy na obrázky}
+	\begin{itemize}
+		\item \url{https://cs.wikipedia.org/wiki/Riemann\%C5\%AFv\_integr\%C3\%A1l}
+		\item \url{https://www.math.muni.cz/\~hasil/Data/CZ/Teach/MU/MB152/prednasky\_MB152.pdf} (kapitola 4.5. lokální extrémy)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Bibliografie}
+	\printbibliography
+\end{frame}
+\end{document}
